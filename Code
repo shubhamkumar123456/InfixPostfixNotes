@@ -1,0 +1,80 @@
+#include<iostream>
+#include<ctype.h>
+using namespace std;
+#define size 100
+char stack[size];
+int top = -1;
+
+
+void push(char c){
+    top++;
+    stack[top] = c;
+}
+
+char pop(){
+    char popped = stack[top];
+    top--;
+    return popped;
+}
+
+int precedence(char c){
+    if(c=='^'){
+        return 3;
+    }
+    else if(c=='*' || c=='/'){
+        return 2;
+    }
+    else if(c=='+' || c=='-'){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+                        // a+b*c
+void convertPostfix(char infix[], char postfix[]){
+        int i=0, j=0; 
+        while(infix[i] !='\0'){
+            char c = infix[i]; //a
+            
+            if(isalnum(c)){
+               postfix[j] = c;
+               j++;
+            }
+
+            else if(c=='('){
+                push(c);
+            }
+            else if(c==')'){
+                while(stack[top]!= '('){
+                       postfix[j] =pop();
+                       j++;
+                }
+                pop();
+            }
+            else{
+                while(precedence(stack[top]) >= precedence(c)){
+                      postfix[j] =pop();
+                       j++;
+                }
+                push(c);
+            }
+            i++;
+        }
+
+// step 4
+        while(top!=-1){
+            postfix[j] = pop();
+            j++;
+        }
+        postfix[j]= '\0';
+}
+
+int main(){
+    char infix[size],postfix[size];
+    cout<<"enter a expression : ";  //a+b*c
+    cin>>infix;
+
+    convertPostfix(infix, postfix);
+    cout<<endl<<postfix;
+}
